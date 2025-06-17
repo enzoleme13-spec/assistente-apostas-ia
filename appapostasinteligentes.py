@@ -148,10 +148,26 @@ if pergunta:
         for t in times_citados:
             team_id = buscar_id_time(t)
             if team_id:
-                jogo_encontrado = buscar_jogo_do_dia_por_time_id(team_id)
-                if jogo_encontrado:
-                    break
+               jogo_encontrado = buscar_jogo_do_dia_por_time_id(team_id)
 
+# se não houver jogo hoje, buscar o próximo jogo futuro
+if not jogo_encontrado:
+    url = "https://api-football-v1.p.rapidapi.com/v3/fixtures"
+    params = {"team": team_id, "next": 1}
+    headers = {
+        "X-RapidAPI-Key": API_FOOTBALL_KEY,
+        "X-RapidAPI-Host": API_FOOTBALL_HOST
+    }
+    response = requests.get(url, headers=headers, params=params)
+    proximo = response.json().get("response", [])
+    
+    if proximo:
+        jogo_encontrado = proximo[0]
+        data_jogo = jogo_encontrado["fixture"]["date"][:10]
+        st.warning(f"O {jogo_encontrado['teams']['home']['name']} não joga hoje. O próximo jogo será em {data_jogo}.")
+    else:
+        st.error("Nenhum jogo encontrado para hoje ou futuro com os times citados.")
+        st.stop()
 
 
         if not jogo_encontrado:
