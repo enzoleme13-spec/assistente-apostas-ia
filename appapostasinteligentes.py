@@ -21,13 +21,26 @@ def buscar_jogos_do_dia(time_nome):
         "X-RapidAPI-Host": API_FOOTBALL_HOST
     }
     response = requests.get(url, headers=headers, params=params)
-    jogos = response.json()["response"]
+    
+    try:
+        res_json = response.json()
+    except Exception as e:
+        st.error(f"Erro ao interpretar resposta da API: {e}")
+        st.stop()
+
+    if "response" not in res_json:
+        st.error("❌ A API-Football não retornou dados. Verifique se sua chave está correta e se o plano gratuito não foi ultrapassado.")
+        st.stop()
+
+    jogos = res_json["response"]
+
     for jogo in jogos:
         time_casa = jogo["teams"]["home"]["name"].lower()
         time_fora = jogo["teams"]["away"]["name"].lower()
         if time_nome.lower() in time_casa or time_nome.lower() in time_fora:
             return jogo
     return None
+
 
 def buscar_odds(fixture_id):
     url = "https://api-football-v1.p.rapidapi.com/v3/odds"
