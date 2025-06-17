@@ -71,6 +71,37 @@ def buscar_estatisticas(time_id):
     media_gols = float(dados["goals"]["for"]["average"]["total"])
     return media_gols
 
+def buscar_id_time(nome_time):
+    url = "https://api-football-v1.p.rapidapi.com/v3/teams"
+    params = {"search": nome_time}
+    headers = {
+        "X-RapidAPI-Key": API_FOOTBALL_KEY,
+        "X-RapidAPI-Host": API_FOOTBALL_HOST
+    }
+    response = requests.get(url, headers=headers, params=params)
+    data = response.json()
+
+    if "response" in data and len(data["response"]) > 0:
+        return data["response"][0]["team"]["id"]
+    else:
+        return None
+
+def buscar_jogo_do_dia_por_time_id(team_id):
+    hoje = datetime.datetime.now().strftime("%Y-%m-%d")
+    url = "https://api-football-v1.p.rapidapi.com/v3/fixtures"
+    params = {"team": team_id, "date": hoje}
+    headers = {
+        "X-RapidAPI-Key": API_FOOTBALL_KEY,
+        "X-RapidAPI-Host": API_FOOTBALL_HOST
+    }
+    response = requests.get(url, headers=headers, params=params)
+    data = response.json()
+    
+    if "response" in data and len(data["response"]) > 0:
+        return data["response"][0]
+    else:
+        return None
+
 def calcular_odd_justa(prob):
     if prob > 0:
         return round(1 / prob, 2)
@@ -115,10 +146,12 @@ if pergunta:
         times_citados = [p for p in palavras if len(p) > 3]
 
         jogo_encontrado = None
-        for t in times_citados:
-            jogo_encontrado = buscar_jogos_do_dia(t)
-            if jogo_encontrado:
-                break
+jogo_encontrado = None
+for t in times_citados:
+    jogo_encontrado = buscar_jogos_do_dia(t)
+    if jogo_encontrado:
+        break
+
 
         if not jogo_encontrado:
             st.error("Nenhum jogo encontrado para hoje com os times citados.")
