@@ -141,16 +141,17 @@ pergunta = st.text_input("Digite sua pergunta sobre apostas:", placeholder="Ex: 
 
 if pergunta:
     with st.spinner("Analisando jogo e calculando probabilidades..."):
-        # Extrair time da pergunta (bem simples para MVP)
         palavras = pergunta.lower().split()
         times_citados = [p for p in palavras if len(p) > 3]
 
         jogo_encontrado = None
-jogo_encontrado = None
-for t in times_citados:
-    jogo_encontrado = buscar_jogos_do_dia(t)
-    if jogo_encontrado:
-        break
+        for t in times_citados:
+            team_id = buscar_id_time(t)
+            if team_id:
+                jogo_encontrado = buscar_jogo_do_dia_por_time_id(team_id)
+                if jogo_encontrado:
+                    break
+
 
 
         if not jogo_encontrado:
