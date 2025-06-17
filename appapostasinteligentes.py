@@ -94,8 +94,17 @@ def gerar_resposta_ia(pergunta, jogo, odds, odd_justa, valor_esperado):
     return resposta.choices[0].message.content
 
 # =================== INTERFACE STREAMLIT ===================
+import streamlit as st
+import requests
+import openai
+import datetime
+
+# ✅ Sempre a primeira linha depois dos imports
 st.set_page_config(page_title="Assistente de Apostas IA", layout="centered")
+
+# ... o restante do código abaixo
 st.title("🤖 Assistente de Apostas com IA")
+
 
 pergunta = st.text_input("Digite sua pergunta sobre apostas:", placeholder="Ex: Vale apostar no Flamengo hoje?")
 
